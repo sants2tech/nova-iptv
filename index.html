@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#080e19"><title>NOVA IPTV — Player</title>
+<style>
+:root{--bg:#080e19;--side:#0d1727;--panel:#121f32;--panel2:#1b2c43;--line:#2b405b;--txt:#f3f6fb;--muted:#9aabc1;--accent:#42d6b1;--blue:#4e91ff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font:14px/1.45 system-ui,Arial,sans-serif}button,input,select{font:inherit}button{cursor:pointer;color:inherit;border:0}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.app{min-height:100vh;display:grid;grid-template-columns:225px 1fr}aside{background:var(--side);border-right:1px solid var(--line);padding:18px 12px;display:flex;flex-direction:column;gap:16px}.brand{font-size:20px;font-weight:900;padding:5px 10px}.brand span{color:var(--accent)}.brand i{font-style:normal;background:linear-gradient(135deg,var(--accent),var(--blue));color:#06151a;border-radius:9px;padding:5px 8px;margin-right:7px}.source{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px;color:var(--muted);font-size:11px}.source b{display:block;color:var(--txt);font-size:12px}.nav{display:grid;gap:3px}.nav button{padding:11px 10px;text-align:left;background:transparent;border-radius:9px;color:#b2bfd0}.nav button.active,.nav button:hover{background:#1a2d46;color:white}.nav button.active{box-shadow:inset 3px 0 var(--accent)}.nav small{color:#70839c;margin-top:auto;padding:8px}
+main{min-width:0;padding:23px 27px 40px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:22px}.top h1{margin:0;font-size:24px}.muted{color:var(--muted);font-size:11px}.search{width:min(300px,35vw);padding:10px;background:var(--panel);border:1px solid var(--line);border-radius:9px;color:white}.btn{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:9px 12px;font-size:12px}.btn:hover{border-color:#5d86aa}.primary{background:var(--accent);color:#061a16;border-color:var(--accent);font-weight:800}
+.page{display:none}.page.active{display:block}.hero{border:1px solid #315768;border-radius:15px;padding:22px;background:linear-gradient(105deg,#123e43,#172d4c 65%,#2a294b);display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}.hero small{color:#91ead6;letter-spacing:1.4px;font-weight:800}.hero h2{margin:6px 0}.hero p{margin:0;color:#c3d1df;font-size:12px}.hero .symbol{font-size:70px;color:#ffffff18}
+.section{display:flex;justify-content:space-between;align-items:center;margin:20px 0 10px}.section h2{font-size:16px;margin:0}.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.toolbar select,.field{background:var(--panel);border:1px solid var(--line);border-radius:8px;color:white;padding:9px}
+.channels{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px}.channel{display:flex;align-items:center;gap:10px;padding:10px;background:var(--panel);border:1px solid var(--line);border-radius:10px;text-align:left;min-width:0}.channel:hover{background:var(--panel2);border-color:#5a83a5}.logo{width:39px;height:39px;border-radius:9px;background:#203a55;color:#a5f1dc;display:grid;place-items:center;overflow:hidden;flex:none;font-weight:800;font-size:11px}.logo img{width:100%;height:100%;object-fit:contain}.chname{min-width:0;flex:1}.chname b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px}.chname small{display:block;color:var(--muted);font-size:10px}.star{background:none;color:#f4c968;font-size:17px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:11px}.card{border:1px solid var(--line);background:var(--panel);border-radius:11px;overflow:hidden;text-align:left}.poster{height:105px;background:linear-gradient(135deg,#1c3b57,#30345e);display:grid;place-items:center;font-size:35px}.card div:last-child{padding:10px}.card b{display:block;font-size:12px}.card small{color:var(--muted);font-size:10px}
+.player{border:1px solid var(--line);border-radius:13px;overflow:hidden;background:#02050a}.screen{aspect-ratio:16/9;position:relative;background:#000;display:grid;place-items:center}.screen video{width:100%;height:100%;object-fit:contain;background:#000}.placeholder{position:absolute;text-align:center;color:#9fb1c7;pointer-events:none}.placeholder strong{display:block;color:white;font-size:17px}.placeholder em{font-style:normal;font-size:48px;color:var(--accent)}.overlay{position:absolute;bottom:0;left:0;right:0;padding:35px 15px 12px;background:linear-gradient(transparent,#000b);pointer-events:none}.overlay b{display:block}.controls{display:flex;gap:7px;flex-wrap:wrap;padding:10px;background:#0e1928}.controls button{background:#1d2d43;border:1px solid #30455e;border-radius:8px;padding:8px 10px;font-size:11px}.controls .spacer{flex:1}.playerinfo{padding:12px 15px}
+.notice{background:#14263b;border:1px solid #304b69;border-radius:9px;padding:11px;color:#c0d0e1;font-size:11px;margin:12px 0}.empty{background:var(--panel);border:1px dashed var(--line);padding:27px;text-align:center;border-radius:10px;color:var(--muted)}
+.epg{overflow:auto;border:1px solid var(--line);border-radius:10px}table{width:100%;min-width:750px;border-collapse:collapse;font-size:11px}td,th{padding:10px;border-bottom:1px solid var(--line);border-right:1px solid var(--line);text-align:left}th{background:#192a40;color:#b7c8dc}td button{background:#223750;padding:8px;border-radius:6px;text-align:left;width:100%;font-size:10px}
+.multiview{display:grid;grid-template-columns:1fr 1fr;gap:9px}.slot{aspect-ratio:16/9;background:#03060a;border:1px solid var(--line);border-radius:9px;position:relative;overflow:hidden}.slot video{width:100%;height:100%;object-fit:contain}.slot button{position:absolute;inset:0;background:#101c2c;color:#b5c7dd}
+.settings{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}.setting{padding:14px;background:var(--panel);border:1px solid var(--line);border-radius:10px}.setting b{display:block;margin-bottom:6px}.setting p{font-size:11px;color:var(--muted)}
+.modalbg{display:none;position:fixed;inset:0;background:#000b;z-index:30;align-items:center;justify-content:center;padding:15px}.modalbg.show{display:flex}.modal{width:min(540px,100%);max-height:90vh;overflow:auto;background:#111d2e;border:1px solid #3a526f;border-radius:14px;padding:18px}.modal h2{margin:0 0 12px;font-size:18px}.modal label{display:block;color:#afc0d3;font-size:11px;margin:10px 0 5px}.modal input{width:100%;background:#0a1422;color:white;border:1px solid var(--line);padding:10px;border-radius:8px}.modalactions{display:flex;justify-content:flex-end;gap:8px;margin-top:15px}.toast{display:none;position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#233a54;border:1px solid #56718e;border-radius:8px;padding:10px 15px;z-index:50;font-size:12px}
+@media(max-width:740px){.app{grid-template-columns:1fr}aside{position:sticky;top:0;z-index:5;padding:8px;border-right:0;border-bottom:1px solid var(--line);gap:7px}.brand{font-size:16px}.source,aside>small{display:none}.nav{display:flex;overflow:auto}.nav button{white-space:nowrap;padding:8px;font-size:11px}main{padding:15px 11px 30px}.top{align-items:flex-start;flex-direction:column}.search{width:100%}.hero{padding:15px}.hero h2{font-size:18px}.hero .symbol{font-size:42px}.channels{grid-template-columns:repeat(2,minmax(0,1fr))}.multiview{grid-template-columns:1fr 1fr}}
+@media(max-width:420px){.channels{grid-template-columns:1fr}.screen{aspect-ratio:4/3}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js"></script>
+</head>
+<body><div class="app">
+<aside><div class="brand"><i>N</i>NOVA <span>IPTV</span></div><div class="source"><b id="srcName">Modo demonstração</b><span id="srcCount">Conectando ao servidor…</span></div>
+<nav class="nav" id="nav">
+<button class="active" data-page="home">⌂　Início</button><button data-page="live">▣　TV ao vivo</button><button data-page="guide">▦　Guia EPG</button><button data-page="movies">▰　Filmes</button><button data-page="series">▤　Séries</button><button data-page="favorites">☆　Favoritos</button><button data-page="multi">▦　Multiview</button><button data-page="recordings">⏺　Gravação</button><button data-page="settings">⚙　Configurações</button></nav><small style="margin-top:auto;color:#6e8098;padding:8px">PLAYER HTML INDEPENDENTE</small></aside>
+<main><header class="top"><div><h1 id="heading">Sua TV, do seu jeito</h1><div class="muted" id="subheading">Conecte sua lista Xtream Codes para carregar a programação.</div></div><div style="display:flex;gap:8px;align-items:center;width:min(430px,100%)"><input id="search" class="search" placeholder="Buscar conteúdo…"><button class="btn" onclick="openModal('listModal')">＋ Lista</button></div></header>
+<section id="home" class="page active"><div class="hero"><div><small>NOVA IPTV · EXPERIÊNCIA AVANÇADA</small><h2>TV ao vivo, filmes e séries</h2><p>Interface inspirada em players de sala, com navegação por controle remoto.</p><p style="margin-top:13px"><button class="btn primary" onclick="go('live')">Explorar canais</button> <button class="btn" onclick="openModal('listModal')">Adicionar playlist</button></p></div><div class="symbol">◉</div></div><div class="section"><h2>Retomar</h2><span class="muted">Histórico local</span></div><div id="resume" class="cards"></div><div class="section"><h2>Canais em destaque</h2></div><div id="featured" class="channels"></div></section>
+<section id="live" class="page"><div class="toolbar"><select id="group" onchange="renderChannels()"><option value="">Todos os grupos</option></select><button class="btn" onclick="openModal('listModal')">Importar M3U</button><button class="btn primary" onclick="go('settings');$('xtHost').scrollIntoView({behavior:'smooth',block:'center'})">＋ Xtream Codes</button><button class="btn" onclick="go('settings');$('epgUrl').scrollIntoView({behavior:'smooth',block:'center'})">＋ EPG externo</button></div><div id="channels" class="channels"></div></section>
+<section id="guide" class="page"><div class="toolbar"><button class="btn" onclick="loadEpgUrl()">Atualizar EPG externo</button><button class="btn" onclick="$('xmlfile').click()">Importar XMLTV</button><span class="muted" id="epgGuideStatus">Grade de programação</span></div><div class="epg"><table><thead><tr><th>Canal</th><th>Agora</th><th>Próximo</th><th>Mais tarde</th></tr></thead><tbody id="epgRows"></tbody></table></div></section>
+<section id="movies" class="page"><div class="cards" id="movieCards"></div></section><section id="series" class="page"><div class="cards" id="seriesCards"></div></section>
+<section id="favorites" class="page"><div id="favChannels" class="channels"></div></section>
+<section id="player" class="page"><div class="section"><h2>Reprodutor</h2><button class="btn" onclick="go('live')">← Canais</button></div><div class="player"><div class="screen" id="screen"><video id="video" playsinline controls></video><div class="placeholder" id="placeholder"><em>▶</em><strong>Selecione um conteúdo</strong><span class="muted">A transmissão aparecerá aqui</span></div><div class="overlay"><b id="overlayTitle">NOVA IPTV</b><span class="muted" id="overlaySub">Player</span></div></div><div class="controls"><button onclick="togglePlay()">▶ / ❚❚</button><button onclick="zap(-1)">◀ Canal</button><button onclick="zap(1)">Canal ▶</button><button onclick="aspect()">Proporção</button><button onclick="pip()">PiP</button><button onclick="fullscreen()">Tela cheia</button><button onclick="tracks()">Áudio/legendas</button><button onclick="startRecord()">⏺ Gravar</button><button onclick="stopRecord()">■ Parar gravação</button><span class="spacer"></span><button onclick="go('home')">Início</button></div><div class="playerinfo"><b id="playingTitle">Nenhum conteúdo</b><div class="muted" id="playingDesc">Selecione um canal, filme ou série.</div></div></div><div class="notice">A reprodução real depende de URL autorizada, formato suportado, CORS e compatibilidade do navegador.</div></section>
+<section id="multi" class="page"><div class="section"><h2>Multiview — 4 telas</h2><span class="muted">Selecione canais para cada janela</span></div><div class="multiview" id="multiGrid"></div></section>
+<section id="recordings" class="page"><div class="section"><h2>Gravações e catch-up</h2></div><div id="recordList" class="empty">Nenhuma gravação nesta sessão.</div><div class="notice">Gravação de stream remoto só funciona se o navegador expuser o stream e as políticas CORS/codec permitirem. Catch-up requer suporte do provedor e uma URL de replay configurada.</div></section>
+<section id="settings" class="page"><div class="settings">
+<div class="setting"><b>Playlists M3U</b><p>Importe múltiplas listas por URL ou arquivo local.</p><button class="btn primary" onclick="openModal('listModal')">Adicionar playlist</button><div id="listNames" class="muted" style="margin-top:8px"></div></div>
+<div class="setting"><b>Xtream Codes</b><p>Conecte usando os dados fornecidos pelo seu serviço IPTV. O endereço deve ser a URL base do servidor.</p>
+<label>Servidor / URL base</label><input id="xtHost" class="field" style="width:100%" placeholder="http://servidor:porta">
+<label>Usuário</label><input id="xtUser" class="field" style="width:100%" autocomplete="off" placeholder="Seu usuário">
+<label>Senha</label><input id="xtPass" class="field" style="width:100%" type="password" autocomplete="new-password" placeholder="Sua senha">
+<label>Formato preferido</label><select id="xtFormat" class="field" style="width:100%"><option value="m3u8">HLS / M3U8 (recomendado para navegador)</option><option value="ts">MPEG-TS (.ts)</option></select>
+<button class="btn primary" onclick="connectXtream()">Conectar e importar canais</button>
+<div id="xtStatus" class="muted" style="margin-top:8px">Nenhuma conexão Xtream nesta sessão.</div></div>
+<div class="setting"><b>EPG externo (XMLTV)</b><p>Informe a URL XMLTV do seu provedor. Os IDs dos canais no XMLTV devem corresponder ao tvg-id da lista ou ao ID/nome do canal.</p>
+<label>URL do EPG</label><input id="epgUrl" class="field" style="width:100%" placeholder="https://servidor/epg.xml ou .../xmltv.php?username=...">
+<button class="btn primary" onclick="loadEpgUrl()">Carregar EPG externo</button>
+<button class="btn" onclick="$('xmlfile').click()">Importar arquivo XMLTV</button><input id="xmlfile" type="file" accept=".xml,.xmltv" hidden>
+<div id="epgStatus" class="muted" style="margin-top:8px">EPG de demonstração carregado.</div></div>
+<div class="setting"><b>Controle parental</b><p>Configure PIN e grupos que exigem desbloqueio.</p><button class="btn" onclick="openModal('pinModal')">Configurar PIN</button><button class="btn" onclick="locked=false;toast('Bloqueio reativado.')">Bloquear novamente</button></div>
+<div class="setting"><b>Backup</b><p>Exporte favoritos e configurações.</p><button class="btn" onclick="backup()">Exportar backup</button></div>
+<div class="setting"><b>Catch-up</b><p>Informe o padrão de URL de replay fornecido pelo seu serviço. Placeholders: {stream_id}, {utc}, {duration}.</p><input id="catchPattern" class="field" style="width:100%" placeholder="https://servidor/replay/{stream_id}/{utc}/{duration}"><button class="btn" onclick="saveCatch()">Salvar padrão</button></div>
+</div></section>
+</main></div>
+<div class="modalbg" id="listModal"><div class="modal"><h2>Adicionar playlist</h2><label>Nome</label><input id="listName" placeholder="Minha lista"><label>URL M3U (deixe vazio para escolher arquivo)</label><input id="listUrl" placeholder="https://exemplo/lista.m3u"><label>Arquivo M3U</label><input id="listFile" type="file" accept=".m3u,.m3u8,.txt"><div class="modalactions"><button class="btn" onclick="closeModal('listModal')">Fechar</button><button class="btn primary" onclick="addList()">Importar lista</button></div><p class="muted">Para conectar via Xtream, use a seção em Configurações. Importar a lista não garante reprodução: o navegador precisa suportar o formato do stream e o servidor deve permitir CORS. Streams .ts frequentemente não tocam diretamente em navegadores.</p></div></div>
+<div class="modalbg" id="pinModal"><div class="modal"><h2>Controle parental</h2><label>PIN de 4 dígitos</label><input id="pinValue" type="password" maxlength="4" inputmode="numeric"><label>Grupos bloqueados, separados por vírgula</label><input id="pinGroups" placeholder="Adultos, Restrito"><div class="modalactions"><button class="btn" onclick="closeModal('pinModal')">Cancelar</button><button class="btn primary" onclick="savePin()">Salvar</button></div></div></div>
+<div class="modalbg" id="askPin"><div class="modal"><h2>Conteúdo protegido</h2><label>Digite o PIN</label><input id="pinTry" type="password" maxlength="4" inputmode="numeric"><div class="modalactions"><button class="btn" onclick="closeModal('askPin')">Cancelar</button><button class="btn primary" onclick="checkPin()">Desbloquear</button></div></div></div>
+<div class="toast" id="toast"></div>
+<script>
+const $=id=>document.getElementById(id), demo='https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4';
+// Configuração inicial solicitada. Pode ser alterada na tela Configurações.
+const DEFAULT_XTREAM={host:'http://governosptx.org:80',username:'3llohwk4g9',password:'kwf099q30o',format:'m3u8'};
+const DEFAULT_EPG='https://raw.githubusercontent.com/sants2tech/epg-xtream-personalizado/main/public/epg.xml';
+let channels=[];
+let movies=[{id:'m1',name:'Além do Horizonte',group:'Aventura',url:demo,emoji:'🏔️'},{id:'m2',name:'Código da Cidade',group:'Ação',url:demo,emoji:'🌃'},{id:'m3',name:'Oceano Profundo',group:'Documentário',url:demo,emoji:'🌊'}],series=[{id:'s1',name:'Distrito Zero',group:'Ficção',url:demo,emoji:'🪐'},{id:'s2',name:'Pequenas Descobertas',group:'Família',url:demo,emoji:'🔎'}];
+let playlists=[],favorites=JSON.parse(localStorage.getItem('novaFav')||'[]'),history=JSON.parse(localStorage.getItem('novaHist')||'[]'),epg=[],epgChannelAliases={},current=null,hls=null,rec=null,recChunks=[],catchPattern='',pin='',lockedGroups=[],locked=false,pending=null,ratio=0;
+const pages={home:['Sua TV, do seu jeito','Conecte sua lista Xtream Codes para carregar a programação.'],live:['TV ao vivo','Canais e grupos da sua playlist.'],guide:['Guia EPG','Grade XMLTV externa ou importada.'],movies:['Filmes','Biblioteca de vídeo sob demanda.'],series:['Séries','Temporadas e episódios.'],favorites:['Favoritos','Seus canais preferidos.'],player:['Reprodução','Player de mídia.'],multi:['Multiview','Até quatro transmissões.'],recordings:['Gravações','Gravação local e catch-up.'],settings:['Configurações','Preferências do player.']};
+function toast(t){let x=$('toast');x.textContent=t;x.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>x.style.display='none',2600)}
+function go(p){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$(p).classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.page===p));$('heading').textContent=pages[p][0];$('subheading').textContent=pages[p][1];if(p==='live')renderChannels();if(p==='guide')renderEpg();if(p==='favorites')renderFav();if(p==='multi')renderMulti()}
+$('nav').onclick=e=>{let b=e.target.closest('[data-page]');if(b)go(b.dataset.page)};
+function openModal(id){$(id).classList.add('show')}function closeModal(id){$(id).classList.remove('show')}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function parseM3U(t){let a=[],m=null;for(let l of t.replace(/^\uFEFF/,'').split(/\r?\n/)){l=l.trim();if(l.startsWith('#EXTINF')){let attrs={};for(let x of l.matchAll(/([\w-]+)="([^"]*)"/g))attrs[x[1]]=x[2];m={name:l.split(',').slice(1).join(',').trim()||'Canal',group:attrs['group-title']||'Sem categoria',logo:attrs['tvg-logo']||'',tvgid:attrs['tvg-id']||''}}else if(l&&!l.startsWith('#')&&m){a.push({...m,id:'c'+Math.random().toString(36).slice(2),url:l});m=null}}return a}
+async function addList(){let file=$('listFile').files[0],url=$('listUrl').value.trim(),name=$('listName').value.trim()||file?.name||'Playlist';try{let text;if(file)text=await file.text();else if(url){toast('Carregando lista…');let r=await fetch(url);if(!r.ok)throw Error();text=await r.text()}else return toast('Informe uma URL ou arquivo M3U.');let parsed=parseM3U(text);if(!parsed.length)return toast('Nenhum canal M3U encontrado.');playlists.push({name,url,count:parsed.length});channels=channels.concat(parsed.map(c=>({...c,source:name})));renderAll();closeModal('listModal');toast(parsed.length+' canais importados.')}catch(e){toast('Falha ao ler a lista. Verifique URL, conexão e CORS.');console.error(e)}}
+function cleanHost(value){return String(value||'').trim().replace(/\/+$/,'')}
+async function connectXtream(){
+ let host=cleanHost($('xtHost').value),user=$('xtUser').value.trim(),pass=$('xtPass').value,preferred=$('xtFormat').value;
+ localStorage.setItem('novaXtreamConfig',JSON.stringify({host,username:user,password:pass,format:preferred}));
+ if(!/^https?:\/\//i.test(host)||!user||!pass)return toast('Preencha servidor, usuário e senha.');
+ try{
+  $('xtStatus').textContent='Autenticando no servidor…';
+  let api=host+'/player_api.php?'+new URLSearchParams({username:user,password:pass});
+  let auth=await fetch(api);
+  if(!auth.ok)throw Error('Falha de autenticação HTTP '+auth.status);
+  let account=await auth.json();
+  if(!account.user_info||account.user_info.auth===0)throw Error('Credenciais não autorizadas');
+  let response=await fetch(api+'&action=get_live_streams');
+  if(!response.ok)throw Error('Não foi possível obter os canais');
+  let streams=await response.json();
+  if(!Array.isArray(streams)||!streams.length)throw Error('Servidor não retornou canais ao vivo');
+  let cats={};
+  try{
+   let cr=await fetch(api+'&action=get_live_categories');
+   if(cr.ok){let ca=await cr.json();if(Array.isArray(ca))ca.forEach(x=>cats[String(x.category_id)]=x.category_name)}
+  }catch(_){}
+  let imported=streams.map(st=>{
+   let ext=preferred==='m3u8'?'m3u8':String(st.container_extension||'ts').replace(/^\\./,'');
+   return {
+    id:'xt'+String(st.stream_id),
+    name:st.name||('Canal '+st.stream_id),
+    group:cats[String(st.category_id)]||st.category_name||'Xtream Codes',
+    logo:st.stream_icon||'',
+    tvgid:st.epg_channel_id||'',
+    url:host+'/live/'+encodeURIComponent(user)+'/'+encodeURIComponent(pass)+'/'+st.stream_id+'.'+ext,
+    source:'Xtream Codes'
+   };
+  });
+  let known=new Set(channels.map(c=>c.id));
+  channels=channels.concat(imported.filter(c=>!known.has(c.id)));
+  channels=channels.filter(c=>c.source!=='Xtream Codes').concat(imported);
+  playlists=playlists.filter(p=>!String(p.name).startsWith('Xtream: '));
+  playlists.push({name:'Xtream: '+host,count:imported.length});
+  $('srcName').textContent='Xtream Codes conectado';
+  $('xtStatus').textContent=imported.length+' canais obtidos do Xtream Codes.';
+  renderAll();renderEpg();
+  toast(imported.length+' canais Xtream importados.');
+ }catch(e){
+  console.error(e);
+  $('xtStatus').textContent='Não foi possível conectar: '+(e.message||'erro de rede');
+  toast('Falha no Xtream. Verifique credenciais, endereço e CORS.');
+ }
+}
+function channelHtml(c){return `<div class="channel" tabindex="0" onclick="playChannel('${esc(c.id)}')"><div class="logo">${c.logo&&c.logo.startsWith('http')?`<img src="${esc(c.logo)}" onerror="this.style.display='none'">`:esc(c.logo||c.name.slice(0,3))}</div><div class="chname"><b>${esc(c.name)}</b><small>${esc(c.group)}</small></div><button class="star" onclick="event.stopPropagation();fav('${esc(c.id)}')">${favorites.includes(c.id)?'★':'☆'}</button></div>`}
+function renderChannels(){let g=$('group').value,q=$('search').value.toLowerCase(),groups=[...new Set(channels.map(c=>c.group))];$('group').innerHTML='<option value="">Todos os grupos</option>'+groups.map(x=>`<option>${esc(x)}</option>`).join('');$('channels').innerHTML=channels.filter(c=>(!g||c.group===g)&&(!q||c.name.toLowerCase().includes(q))).map(channelHtml).join('')||'<div class="empty">Nenhum canal. Importe uma playlist M3U.</div>'}
+function fav(id){favorites=favorites.includes(id)?favorites.filter(x=>x!==id):favorites.concat(id);localStorage.setItem('novaFav',JSON.stringify(favorites));renderChannels();renderFav()}
+function renderFav(){$('favChannels').innerHTML=channels.filter(c=>favorites.includes(c.id)).map(channelHtml).join('')||'<div class="empty">Nenhum favorito salvo.</div>'}
+function playChannel(id){let c=channels.find(x=>x.id===id);if(!c)return;if(lockedGroups.includes(c.group)&&pin&&!locked){pending=c;openModal('askPin');return}play(c)}
+function play(x){
+ current=x;go('player');
+ $('playingTitle').textContent=x.name;$('playingDesc').textContent=x.group||x.kind||'Conteúdo';
+ $('overlayTitle').textContent=x.name;$('overlaySub').textContent=x.group||'NOVA IPTV';
+ $('placeholder').style.display='none';
+ let v=$('video');
+ if(hls){hls.destroy();hls=null}
+ v.pause();v.removeAttribute('src');v.load();
+ v.onerror=()=>{
+  let code=v.error?.code,detail=({1:'reprodução interrompida',2:'erro de rede ou CORS',3:'formato/codec não suportado',4:'URL ou formato não reconhecido'})[code]||'falha desconhecida';
+  toast('Não foi possível reproduzir: '+detail+'. Confira formato e URL do stream.');
+  $('playingDesc').textContent='Falha de reprodução: '+detail+'. Alguns navegadores não reproduzem .ts diretamente.';
+ };
+ let url=String(x.url||'').trim(),isHls=/\.m3u8($|[?#])/i.test(url);
+ if(isHls&&window.Hls&&Hls.isSupported()){
+  hls=new Hls({enableWorker:true});
+  hls.loadSource(url);hls.attachMedia(v);
+  hls.on(Hls.Events.MANIFEST_PARSED,()=>v.play().catch(()=>toast('Stream carregado. Pressione Play para iniciar.')));
+  hls.on(Hls.Events.ERROR,(e,d)=>{
+   if(d.fatal){
+    let msg=d.type===Hls.ErrorTypes.NETWORK_ERROR?'erro de rede/CORS ao buscar HLS':d.type===Hls.ErrorTypes.MEDIA_ERROR?'codec ou mídia incompatível':'erro fatal HLS';
+    toast('Falha HLS: '+msg+'.');
+    $('playingDesc').textContent='Falha HLS: '+msg+'. Teste a URL no player do provedor.';
+    hls.destroy();hls=null;
+   }
+  });
+ }else{
+  if(isHls&&v.canPlayType('application/vnd.apple.mpegurl'))v.src=url;
+  else v.src=url;
+  v.play().catch(()=>toast('O canal foi selecionado, mas o navegador não iniciou a reprodução. Verifique codec, URL e CORS.'));
+ }
+ history=[{id:x.id,name:x.name,url:x.url,group:x.group},...history.filter(y=>y.id!==x.id)].slice(0,12);
+ localStorage.setItem('novaHist',JSON.stringify(history));renderHome();
+}
+function togglePlay(){let v=$('video');if(!v.src)return toast('Selecione um canal.');v.paused?v.play():v.pause()}
+function zap(n){let i=channels.findIndex(c=>c.id===current?.id);if(i<0)return;playChannel(channels[(i+n+channels.length)%channels.length].id)}
+function aspect(){ratio=(ratio+1)%3;$('video').style.objectFit=['contain','cover','fill'][ratio];toast(['Ajustar','Preencher','Esticar'][ratio])}
+function fullscreen(){let e=$('screen');document.fullscreenElement?document.exitFullscreen():e.requestFullscreen?.()}
+async function pip(){let v=$('video');if(!document.pictureInPictureEnabled||!v.requestPictureInPicture)return toast('PiP não suportado.');try{await v.requestPictureInPicture()}catch(e){toast('PiP indisponível para este stream.')}}
+function tracks(){let v=$('video');let a=v.audioTracks?[...v.audioTracks].map((x,i)=>i+' '+(x.label||x.language)).join('\n'):'Faixas de áudio não expostas pelo navegador';let t=v.textTracks?[...v.textTracks].map((x,i)=>i+' '+(x.label||x.language)).join('\n'):'Legendas não expostas pelo navegador';alert('Áudio:\n'+(a||'Nenhuma faixa listada')+'\n\nLegendas:\n'+(t||'Nenhuma faixa listada'))}
+function renderHome(){$('featured').innerHTML=channels.slice(0,4).map(channelHtml).join('');$('resume').innerHTML=history.map(x=>`<button class="card" onclick="resume('${esc(x.id)}')"><div class="poster">▶</div><div><b>${esc(x.name)}</b><small>Continuar assistindo</small></div></button>`).join('')||'<div class="empty">Seu histórico aparecerá aqui.</div>'}
+function resume(id){let x=channels.find(c=>c.id===id)||movies.find(c=>c.id===id)||series.find(c=>c.id===id)||history.find(c=>c.id===id);if(x)play(x)}
+function renderVod(type){let arr=type==='movie'?movies:series;$(type==='movie'?'movieCards':'seriesCards').innerHTML=arr.map(x=>`<button class="card" onclick="play(${JSON.stringify(x).replace(/"/g,'&quot;')})"><div class="poster">${x.emoji||'🎬'}</div><div><b>${esc(x.name)}</b><small>${esc(x.group)}</small></div></button>`).join('')}
+function normEpgName(value){
+ return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase()
+  .replace(/\b(hd|fhd|uhd|4k|sd|br|brasil|tv)\b/g,' ').replace(/[^a-z0-9]+/g,' ').trim().replace(/\s+/g,' ');
+}
+function channelEpgIds(c){
+ let aliases=[c.tvgid,c.name,c.id].filter(Boolean).map(x=>String(x).trim());
+ let ids=new Set();
+ aliases.forEach(a=>{
+  let raw=a.toLowerCase(); ids.add(raw);
+  let norm=normEpgName(a); if(norm)ids.add(norm);
+  (epgChannelAliases[norm]||[]).forEach(id=>ids.add(id.toLowerCase()));
+ });
+ // Alguns XMLTV usam ID diferente, mas publicam o nome do canal como display-name.
+ for(const [alias,idsForAlias] of Object.entries(epgChannelAliases)){
+  if(!alias)continue;
+  if(aliases.some(a=>{let n=normEpgName(a);return n&&(alias===n||alias.startsWith(n+' ')||n.startsWith(alias+' '));})) idsForAlias.forEach(id=>ids.add(id.toLowerCase()));
+ }
+ return ids;
+}
+function programsForChannel(c){
+ let ids=channelEpgIds(c);
+ return epg.filter(x=>ids.has(String(x.channel).toLowerCase())||ids.has(normEpgName(x.channel)));
+}
+function renderEpg(){
+ let now=Date.now(),matched=0;
+ $('epgRows').innerHTML=channels.slice(0,300).map(c=>{
+  let p=programsForChannel(c).sort((a,b)=>Date.parse(a.start)-Date.parse(b.start));
+  let nowp=p.find(x=>Date.parse(x.start)<=now&&Date.parse(x.stop)>now),future=p.filter(x=>Date.parse(x.start)>now);
+  if(nowp||future.length)matched++;
+  let cells=[nowp,future[0],future[1]].map(x=>`<td>${x?`<button onclick="playChannel('${esc(c.id)}')">${esc(x.title)}<br><span class="muted">${new Date(x.start).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})} – ${new Date(x.stop).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</span></button>`:'<span class="muted">Sem dados XMLTV</span>'}</td>`).join('');
+  return `<tr><td>${esc(c.name)}</td>${cells}</tr>`;
+ }).join('')||'<tr><td colspan="4">Conecte uma lista Xtream para exibir os canais.</td></tr>';
+ if($('epgGuideStatus')&&epg.length)$('epgGuideStatus').textContent=`${epg.length} programas XMLTV · ${matched} canais com grade`;
+}
+function parseXmltv(text){
+ let doc=new DOMParser().parseFromString(text,'text/xml');
+ if(doc.querySelector('parsererror'))throw Error('XML inválido');
+ let aliases={};
+ [...doc.querySelectorAll('channel')].forEach(ch=>{
+  let id=ch.getAttribute('id')||''; if(!id)return;
+  let names=[...ch.querySelectorAll('display-name')].map(x=>x.textContent||'').concat([id]);
+  names.forEach(name=>{let n=normEpgName(name);if(n)(aliases[n]??=[]).push(id)});
+ });
+ let parsed=[...doc.querySelectorAll('programme')].map(p=>({
+  channel:p.getAttribute('channel')||'',start:xmlDate(p.getAttribute('start')),stop:xmlDate(p.getAttribute('stop')),
+  title:p.querySelector('title')?.textContent||'Programa',desc:p.querySelector('desc')?.textContent||''
+ })).filter(p=>p.channel&&p.start&&p.stop&&Number.isFinite(Date.parse(p.start))&&Number.isFinite(Date.parse(p.stop)));
+ if(!parsed.length)throw Error('Nenhum programa encontrado no XMLTV');
+ epg=parsed;epgChannelAliases=aliases;
+ let status=epg.length+' programas carregados';
+ if($('epgStatus'))$('epgStatus').textContent=status;
+ if($('epgGuideStatus'))$('epgGuideStatus').textContent=status;
+ renderEpg();
+ return parsed.length;
+}
+$('xmlfile').onchange=async e=>{
+ let f=e.target.files[0];if(!f)return;
+ try{let n=parseXmltv(await f.text());toast('EPG XMLTV carregado: '+n+' programas.')}
+ catch(x){toast('XMLTV inválido ou sem programas compatíveis.')}
+ e.target.value='';
+};
+async function loadEpgUrl(){
+ let url=$('epgUrl')?.value.trim();
+ if(!url)return toast('Informe a URL do EPG externo nas Configurações.');
+ try{
+  if($('epgStatus'))$('epgStatus').textContent='Baixando EPG personalizado…';
+  toast('Baixando grade XMLTV…');
+  let fetchUrl=url+(url.includes('?')?'&':'?')+'_epg_refresh='+Date.now();
+  let r=await fetch(fetchUrl,{headers:{'Accept':'application/xml,text/xml,*/*','Cache-Control':'no-cache'}});
+  if(!r.ok)throw Error('HTTP '+r.status);
+  let n=parseXmltv(await r.text());
+  toast('EPG atualizado: '+n+' programas.');
+  if($('epgStatus'))$('epgStatus').textContent=n+' programas XMLTV carregados. Veja quantos canais casaram na aba Guia EPG.';
+ }catch(e){
+  console.error(e);
+  toast('Falha ao carregar EPG. Verifique URL, conexão e CORS do servidor.');
+  if($('epgStatus'))$('epgStatus').textContent='Falha ao baixar XMLTV: '+(e.message||'rede/CORS');
+ }
+}
+function xmlDate(s){let m=s?.match(/^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})\s*([+-]\d{4})?/);if(!m)return s;return `${m[1]}-${m[2]}-${m[3]}T${m[4]}:${m[5]}:${m[6]}${m[7]?m[7].slice(0,3)+':'+m[7].slice(3):'Z'}`}
+function renderMulti(){$('multiGrid').innerHTML=[0,1,2,3].map(i=>`<div class="slot"><button onclick="chooseMulti(${i})">＋ Escolher canal</button></div>`).join('')}
+function chooseMulti(i){let name=prompt('Digite o nome exato do canal:\n'+channels.map(c=>c.name).join('\n'));let c=channels.find(x=>x.name.toLowerCase()===String(name).toLowerCase());if(!c)return;let slot=$('multiGrid').children[i];slot.innerHTML='<video controls playsinline></video>';let v=slot.querySelector('video');v.src=c.url;v.play().catch(()=>{})}
+function savePin(){let p=$('pinValue').value;if(!/^\d{4}$/.test(p))return toast('Use PIN de quatro dígitos.');pin=p;lockedGroups=$('pinGroups').value.split(',').map(x=>x.trim()).filter(Boolean);locked=false;closeModal('pinModal');toast('Controle parental configurado.')}
+function checkPin(){if($('pinTry').value===pin){locked=true;closeModal('askPin');if(pending){play(pending);pending=null}}else toast('PIN incorreto.')}
+function saveCatch(){catchPattern=$('catchPattern').value;toast('Padrão de catch-up salvo.')}
+function startRecord(){let v=$('video');if(!v.captureStream||!window.MediaRecorder)return toast('Gravação de stream não é suportada neste navegador.');try{let stream=v.captureStream();rec=new MediaRecorder(stream);recChunks=[];rec.ondataavailable=e=>{if(e.data.size)recChunks.push(e.data)};rec.onstop=()=>{let blob=new Blob(recChunks,{type:rec.mimeType||'video/webm'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='nova-gravacao.webm';a.click();toast('Arquivo de gravação preparado.')};rec.start();toast('Gravação iniciada.')}catch(e){toast('Não foi possível gravar: restrição do navegador/stream.')}}
+function stopRecord(){if(rec&&rec.state!=='inactive'){rec.stop();rec=null}else toast('Nenhuma gravação em andamento.')}
+function backup(){let blob=new Blob([JSON.stringify({favorites,history,playlists},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='nova-iptv-backup.json';a.click();URL.revokeObjectURL(a.href)}
+document.addEventListener('keydown',e=>{if(['INPUT','SELECT'].includes(document.activeElement.tagName))return;if(e.key==='ArrowUp'||e.key==='ArrowDown'){let els=[...document.querySelectorAll('.page.active button')].filter(x=>x.offsetParent);let i=els.indexOf(document.activeElement);els[(i+(e.key==='ArrowDown'?1:-1)+els.length)%els.length]?.focus();e.preventDefault()}if(e.key==='Enter'&&document.activeElement.matches('.channel'))document.activeElement.click();if(e.key==='Escape'&&$('player').classList.contains('active'))go('live');if(e.key===' '&&$('player').classList.contains('active')){e.preventDefault();togglePlay()}if(e.key==='PageUp')zap(-1);if(e.key==='PageDown')zap(1)});
+$('search').oninput=()=>{renderChannels();renderVod('movie');renderVod('series')};
+function renderAll(){renderChannels();renderFav();renderHome();renderVod('movie');renderVod('series');$('srcName').textContent=playlists.length+' lista(s) carregada(s)';$('srcCount').textContent=channels.length+' canais disponíveis';$('listNames').textContent=playlists.map(p=>p.name+' ('+p.count+')').join(' · ')||'Nenhuma lista importada.'}
+function initDefaultConfig(){
+ let saved=null;try{saved=JSON.parse(localStorage.getItem('novaXtreamConfig')||'null')}catch(_){}
+ const cfg=saved||DEFAULT_XTREAM;
+ $('xtHost').value=cfg.host||DEFAULT_XTREAM.host;
+ $('xtUser').value=cfg.username||DEFAULT_XTREAM.username;
+ $('xtPass').value=cfg.password||DEFAULT_XTREAM.password;
+ $('xtFormat').value=cfg.format||'m3u8';
+ $('epgUrl').value=localStorage.getItem('novaEpgUrl')||DEFAULT_EPG;
+ $('epgStatus').textContent='EPG personalizado configurado. Aguardando conexão…';
+ $('srcName').textContent='Xtream Codes pré-configurado';
+ $('srcCount').textContent='Conectando ao servidor…';
+}
+$('epgUrl').addEventListener('change',()=>localStorage.setItem('novaEpgUrl',$('epgUrl').value.trim()));
+initDefaultConfig();renderAll();renderEpg();
+// Conecta automaticamente ao abrir o HTML e carrega o EPG configurado.
+setTimeout(async()=>{
+ try{await connectXtream();}catch(e){console.error(e)}
+ try{await loadEpgUrl();}catch(e){console.error(e)}
+},250);
+
+</script></body></html>
